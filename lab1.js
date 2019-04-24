@@ -1,6 +1,6 @@
 'use strict';
 
-const groupSizes = [5, 6, 7, 4];
+const groupSizes = [6, 5, 7, 2];
 
 class Matrix {
   constructor() {
@@ -187,6 +187,7 @@ class Matrix {
       this.groups.push(curGroup);
     }
     console.log(this.groups);
+    console.log('Number of external links: ', this.calcAllOutsideLinks());
     console.log('=============================')
   }
 
@@ -210,7 +211,15 @@ class Matrix {
   }
 
   calcAllOutsideLinks() {
-
+    let sum = 0;
+    this.groups.forEach((group, i) => {
+      group.forEach((el) => {
+        for(let j = i + 1; j < this.groups.length; j++) {
+          sum += this.sumLinksBetweenElAndGroup(el, this.groups[j]);
+        }
+      });
+    });
+    return sum;
   }
 
   switchElements(colEl, rowEl) {
@@ -248,6 +257,7 @@ class Matrix {
           this.switchElements(colSelected, rowSelected);
           console.log(this.groups);
           console.log(`${colSelected} and ${rowSelected} switched`);
+          console.log('Number of external links: ', this.calcAllOutsideLinks());
           console.log('=============================')
         } else {
           break;
@@ -286,47 +296,56 @@ class Matrix {
 const erlichAlgorithm = (n, groupSizes) => {
   let patterns = [];
   let splitting = [];
-  let minTerm = Math.min(...groupSizes);
-  let maxTerm = Math.max(...groupSizes);
+  const minTerm = Math.min(...groupSizes);
+  const maxTerm = Math.max(...groupSizes);
+  if(maxTerm > n) {
+    return -1;
+  }
   for(let i = 0; i < Math.floor(n / minTerm); i++) {
     splitting.push(minTerm);
   }
-  let arrSum = splitting.reduce((acc, el) => acc += el);
-  for(let i = 0; i < n - arrSum; i++) {
-    splitting.push(1);
+  if(n % minTerm === 0) {
+    patterns.push(splitting.slice());
+  } else {
+    for(let i = 0; i < n % minTerm; i++) {
+      splitting.push(1);
+    }
   }
   while(true) {
-    // console.log(splitting);
     if(splitting[0] === maxTerm + 1) {
       break;
     }
     let minEl = Math.min(...splitting.slice(0, -1))
     let minPos = splitting.indexOf(minEl);
-    splitting[splitting.length - 1]--;
     splitting[minPos]++;
     splitting.splice(minPos + 1);
-    arrSum = splitting.reduce((acc, el) => acc += el);
-    for(let i = 0; i < n - arrSum; i++) {
+    let arrSum = splitting.reduce((acc, el) => acc += el);
+    let rest = n - arrSum;
+    for(let i = 0; i < Math.floor(rest / minTerm); i++) {
+      splitting.push(minTerm);
+    }
+    for(let i = 0; i < rest % minTerm; i++) {
       splitting.push(1);
     }
     if(splitting.find((el) => groupSizes.indexOf(el) === -1) === undefined) {
       patterns.push(splitting.slice());
     }
   }
-  // console.log('<----------->');
-  // console.log(patterns);
   return patterns;
 };
 
 const matrix = new Matrix();
 // let patterns = generateGroups(groupSizes, 30);
-let patterns = erlichAlgorithm(30, groupSizes);
-console.log(patterns);
+let patterns = erlichAlgorithm(30, [5, 6]);
+if(patterns === -1) {
+  console.log('wrong group sizes');
+  return -1;
+}
+console.log('Generated compositions: ', patterns);
+console.log('<--------------------------->')
 for(let pattern of patterns) {
   console.log('Pattern: ', pattern);
   console.log('<--------------------------->')
   matrix.makeGroups(pattern);
   matrix.optimizeGroups();
 }
-
-erlichAlgorithm(30, groupSizes);
