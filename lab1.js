@@ -267,32 +267,6 @@ class Matrix {
   }
 }
 
-// const generateGroups = (sizes, numberOfElements) => {
-//   let groupSizes = sizes.slice().sort((a, b) => b - a);
-//   let curPattern = [];
-//   let patterns = [];
-//   let curIndex = 0;
-//   let sum = 0;
-
-//   while(curIndex < groupSizes.length) {
-//     do {
-//       sum += groupSizes[curIndex];
-//       curPattern.push(groupSizes[curIndex]);
-//     } while(sum < numberOfElements)
-//     if(sum === numberOfElements) {
-//       patterns.push(curPattern);
-//       curPattern = [];
-//       sum = 0;
-//       curIndex++;
-//     } else {
-//       sum -= groupSizes[curIndex];
-//       curPattern.pop();
-//       curIndex++;
-//     }
-//   }
-//   return patterns;
-// };
-
 const erlichAlgorithm = (n, groupSizes) => {
   let patterns = [];
   let splitting = [];
@@ -335,7 +309,6 @@ const erlichAlgorithm = (n, groupSizes) => {
 };
 
 const matrix = new Matrix();
-// let patterns = generateGroups(groupSizes, 30);
 let patterns = erlichAlgorithm(30, [5, 6]);
 if(patterns === -1) {
   console.log('wrong group sizes');
