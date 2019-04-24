@@ -1,6 +1,6 @@
 'use strict';
 
-const groupSizes = [5, 6, 7];
+const groupSizes = [5, 6, 7, 4];
 
 class Matrix {
   constructor() {
@@ -257,40 +257,47 @@ class Matrix {
   }
 }
 
-const generateGroups = (sizes, numberOfElements) => {
-  let groupSizes = sizes.slice().sort((a, b) => b - a);
-  let curPattern = [];
-  let patterns = [];
-  let curIndex = 0;
-  let sum = 0;
+// const generateGroups = (sizes, numberOfElements) => {
+//   let groupSizes = sizes.slice().sort((a, b) => b - a);
+//   let curPattern = [];
+//   let patterns = [];
+//   let curIndex = 0;
+//   let sum = 0;
 
-  while(curIndex < groupSizes.length) {
-    do {
-      sum += groupSizes[curIndex];
-      curPattern.push(groupSizes[curIndex]);
-    } while(sum < numberOfElements)
-    if(sum === numberOfElements) {
-      patterns.push(curPattern);
-      curPattern = [];
-      sum = 0;
-      curIndex++;
-    } else {
-      sum -= groupSizes[curIndex];
-      curPattern.pop();
-      curIndex++;
-    }
-  }
-  return patterns;
-};
+//   while(curIndex < groupSizes.length) {
+//     do {
+//       sum += groupSizes[curIndex];
+//       curPattern.push(groupSizes[curIndex]);
+//     } while(sum < numberOfElements)
+//     if(sum === numberOfElements) {
+//       patterns.push(curPattern);
+//       curPattern = [];
+//       sum = 0;
+//       curIndex++;
+//     } else {
+//       sum -= groupSizes[curIndex];
+//       curPattern.pop();
+//       curIndex++;
+//     }
+//   }
+//   return patterns;
+// };
 
 const erlichAlgorithm = (n, groupSizes) => {
+  let patterns = [];
   let splitting = [];
-  for(let i = 0; i < n; i++) {
+  let minTerm = Math.min(...groupSizes);
+  let maxTerm = Math.max(...groupSizes);
+  for(let i = 0; i < Math.floor(n / minTerm); i++) {
+    splitting.push(minTerm);
+  }
+  let arrSum = splitting.reduce((acc, el) => acc += el);
+  for(let i = 0; i < n - arrSum; i++) {
     splitting.push(1);
   }
   while(true) {
-    console.log(splitting);
-    if(splitting[0] === n) {
+    // console.log(splitting);
+    if(splitting[0] === maxTerm + 1) {
       break;
     }
     let minEl = Math.min(...splitting.slice(0, -1))
@@ -298,21 +305,28 @@ const erlichAlgorithm = (n, groupSizes) => {
     splitting[splitting.length - 1]--;
     splitting[minPos]++;
     splitting.splice(minPos + 1);
-    let arrSum = splitting.reduce((acc, el) => acc += el);
+    arrSum = splitting.reduce((acc, el) => acc += el);
     for(let i = 0; i < n - arrSum; i++) {
       splitting.push(1);
     }
+    if(splitting.find((el) => groupSizes.indexOf(el) === -1) === undefined) {
+      patterns.push(splitting.slice());
+    }
   }
+  // console.log('<----------->');
+  // console.log(patterns);
+  return patterns;
 };
 
 const matrix = new Matrix();
 // let patterns = generateGroups(groupSizes, 30);
-// console.log(patterns);
-// for(let pattern of patterns) {
-//   console.log('Pattern: ', pattern);
-//   console.log('<--------------------------->')
-//   matrix.makeGroups(pattern);
-//   matrix.optimizeGroups();
-// }
+let patterns = erlichAlgorithm(30, groupSizes);
+console.log(patterns);
+for(let pattern of patterns) {
+  console.log('Pattern: ', pattern);
+  console.log('<--------------------------->')
+  matrix.makeGroups(pattern);
+  matrix.optimizeGroups();
+}
 
 erlichAlgorithm(30, groupSizes);
