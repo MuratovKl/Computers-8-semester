@@ -246,12 +246,15 @@ class Matrix {
         group.forEach((colEl, j) => {
           iterableElements.forEach((rowEl, k) => {
             let deltaR = this.calcDeltaR(colEl, rowEl);
+            console.log(`DeltaR: ${deltaR}, first: ${colEl}, second: ${rowEl}`);
             if(deltaR > maxR) {
               maxR = deltaR;
               colSelected = colEl;
               rowSelected = rowEl;
             }
           });
+          console.log('+++++++++++++');
+          console.log(`DeltaR Max: ${maxR}, first: ${colSelected}, second: ${rowSelected}`);
         });
         if(maxR > 0) {
           this.switchElements(colSelected, rowSelected);
@@ -309,7 +312,7 @@ const erlichAlgorithm = (n, groupSizes) => {
 };
 
 const matrix = new Matrix();
-let patterns = erlichAlgorithm(30, [5, 6]);
+let patterns = erlichAlgorithm(30, groupSizes);
 if(patterns === -1) {
   console.log('wrong group sizes');
   return -1;
