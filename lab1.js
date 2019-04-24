@@ -1,6 +1,6 @@
 'use strict';
 
-const groupSizes = [7, 2];
+const groupSizes = [5, 6, 7];
 
 class Matrix {
   constructor() {
@@ -175,10 +175,10 @@ class Matrix {
 
   // group elements according to pattern
   makeGroups(pattern) {
-    let groups = [];
+    this.groups = [];
+    this.selectedNodes = [];
     for(let n of pattern) {
       let selectedElement = this.selectElement();
-      console.log(selectedElement);
       let curGroup = this.groupRelated(selectedElement, n);
       if(curGroup.length !== n) {
         this.reduceGroup(curGroup, n);
@@ -186,6 +186,8 @@ class Matrix {
       this.selectedNodes.push(...curGroup);
       this.groups.push(curGroup);
     }
+    console.log(this.groups);
+    console.log('=============================')
   }
 
   calcDeltaR(colEl, rowEl) {
@@ -205,6 +207,10 @@ class Matrix {
     sum -= this.sumLinksBetweenElAndGroup(rowEl, rowGroup);
     sum -= 2 * this.m[colEl][rowEl];
     return sum;
+  }
+
+  calcAllOutsideLinks() {
+
   }
 
   switchElements(colEl, rowEl) {
@@ -241,7 +247,8 @@ class Matrix {
         if(maxR > 0) {
           this.switchElements(colSelected, rowSelected);
           console.log(this.groups);
-          console.log('=====================')
+          console.log(`${colSelected} and ${rowSelected} switched`);
+          console.log('=============================')
         } else {
           break;
         }
@@ -276,11 +283,36 @@ const generateGroups = (sizes, numberOfElements) => {
   return patterns;
 };
 
+const erlichAlgorithm = (n, groupSizes) => {
+  let splitting = [];
+  for(let i = 0; i < n; i++) {
+    splitting.push(1);
+  }
+  while(true) {
+    console.log(splitting);
+    if(splitting[0] === n) {
+      break;
+    }
+    let minEl = Math.min(...splitting.slice(0, -1))
+    let minPos = splitting.indexOf(minEl);
+    splitting[splitting.length - 1]--;
+    splitting[minPos]++;
+    splitting.splice(minPos + 1);
+    let arrSum = splitting.reduce((acc, el) => acc += el);
+    for(let i = 0; i < n - arrSum; i++) {
+      splitting.push(1);
+    }
+  }
+};
+
 const matrix = new Matrix();
-let patterns = generateGroups(groupSizes, 30);
-for(pattern of patterns) {
-  matrix.makeGroups(pattern);
-  matrix.optimizeGroups();
-}
-// matrix.makeGroups([5, 5, 5, 5, 5, 5]);
-// matrix.optimizeGroups();
+// let patterns = generateGroups(groupSizes, 30);
+// console.log(patterns);
+// for(let pattern of patterns) {
+//   console.log('Pattern: ', pattern);
+//   console.log('<--------------------------->')
+//   matrix.makeGroups(pattern);
+//   matrix.optimizeGroups();
+// }
+
+erlichAlgorithm(30, groupSizes);
