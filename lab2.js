@@ -4,8 +4,8 @@ class Matrix {
   constructor() {
     this.rowSums = []; // суммы по строкам исходной матрицы (ро)
     this.grouped = [0]; // сгруппированные элементы (изначально группа - первый элемент)
-    this.sizeX = 3; // ширина матрицы группировки
-    this.sizeY = 10; // высота матрицы группировки
+    this.sizeX = 5; // ширина матрицы группировки
+    this.sizeY = 6; // высота матрицы группировки
     // this.m = [
     //   [0, 0, 0, 3, 0, 0, 2, 3, 0],
     //   [0, 0, 2, 0, 2, 0, 0, 0, 0],
@@ -121,9 +121,9 @@ class Matrix {
 
   calcDistance(i, j) {
     let x1 = Math.floor(i % this.sizeX);
-    let y1 = Math.floor(i / this.sizeY);
+    let y1 = Math.floor(i / this.sizeX);
     let x2 = Math.floor(j % this.sizeX);
-    let y2 = Math.floor(j / this.sizeY);
+    let y2 = Math.floor(j / this.sizeX);
     return Math.abs(x1 - x2) + Math.abs(y1 - y2);
   }
 
